@@ -1,14 +1,44 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Navbar from "../shared/Navbar";
+import { useContext } from "react";
+import { AuthContext } from "../authProvider/AuthProvider";
 
 
 const Login = () => {
+  const{signIn,googleSignIn}=useContext(AuthContext)
+  const navigate=useNavigate()
     const handleOnSubmit=(e)=>{
         e.preventDefault();
         console.log(e.currentTarget)
         const form=new FormData(e.currentTarget)
-        console.log(form.get('email'))
-        console.log(form.get('password'))
+        const email=form.get('email')
+        const password=form.get('password')
+        console.log(email," | ",password)
+        signIn(email,password)
+         .then((result) => {
+    const user = result.user;
+    console.log(user)
+    navigate('/')
+
+  })
+  .catch((error) => {
+    const errorCode = error.code;
+    const errorMessage = error.message;
+    console.log(errorCode,' | ',errorMessage)
+  });
+    }
+    const handleGoogleSignIn=()=>{
+      googleSignIn()
+      .then((result) => {
+    const user = result.user;
+   console.log(user)
+     navigate('/')
+  }).catch((error) => {
+    const errorCode = error.code;
+    const errorMessage = error.message;
+  console.log(errorCode,' | ',errorMessage)
+  });
+
     }
     return (
 <div>
@@ -40,6 +70,7 @@ const Login = () => {
           <button className="btn btn-primary">Login</button>
         </div>
       </form>
+        <button onClick={handleGoogleSignIn} className="btn btn-primary m-4 ">Login with Google</button>
       <h2 className="text-center mb-6 text-xl">Do not have an account? Please <Link className="text-blue-500"  to="/register">Register</Link></h2>
     </div>
   </div>
